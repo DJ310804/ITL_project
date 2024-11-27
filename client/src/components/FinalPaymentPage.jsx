@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CreditCard, Calendar, User } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ const PaymentPage = () => {
     expiryDate: '',
     cvv: '',
   });
-
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -33,20 +33,28 @@ const PaymentPage = () => {
     setPaymentDetails((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Simulate payment processing delay
-    setTimeout(async () => {
-      // Show success popup
-      await Swal.fire({
-        icon: 'success',
-        title: 'Payment Successful',
-        text: 'Your order has been placed successfully. You will be notified when your order is out for delivery.',
+    
+    // Validate payment details (simple validation for demonstration)
+    if (!paymentDetails.name || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please fill in all fields!',
       });
+      return;
+    }
 
-      navigate('/thank-you'); // Redirect to thank you page
-    }, 1000); // Simulate a delay of 1 second for processing
+    // Proceed with payment processing logic here...
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Payment Successful!',
+      text: 'Thank you for your purchase!',
+    }).then(() => {
+      navigate('/consumer/home');
+    });
   };
 
   return (
@@ -110,22 +118,17 @@ const PaymentPage = () => {
                 />
               </div>
             </div>
-
-            <Button type="submit" className="mt-6 w-full bg-primary text-primary-content hover:bg-primary-focus">
-              Pay Now
-            </Button>
-
-            {/* Security Note */}
-            <div className="flex items-center mt-4 text-sm text-base-content">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              <span>Your payment information is secure and encrypted.</span>
-            </div>
           </div>
+
+          <Button type="submit" className="mt-6 w-full bg-primary text-primary-content hover:bg-primary-focus">
+            Pay Now
+          </Button>
         </form>
       </Card>
 
       {/* Additional Information */}
       <div className="mt-6 text-base-content">
+        <AlertCircle size={24} className="inline mr-2" />
         Your payment information is secure and will not be shared.
       </div>
     </div>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Trash2, ShoppingBag, ArrowRight, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Trash2, ShoppingBag, ArrowRight, Plus, Currency } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Button = ({ className, children, ...props }) => (
   <button
@@ -46,9 +47,44 @@ const availableProducts = [
   },
 ];
 
+
 const ShoppingCartPage = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [amount, setAmount] = useState(1); // Amount to convert
+  const [fromCurrency, setFromCurrency] = useState('USD');
+  const [toCurrency, setToCurrency] = useState('EUR');
+  const [exchangeRate, setExchangeRate] = useState(1);
+  const [convertedAmount, setConvertedAmount] = useState(1);
 
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await axios.get(
+          `https://open.er-api.com/v6/latest/${fromCurrency}`
+        );
+        const rate = response.data.rates[toCurrency];
+        setExchangeRate(rate);
+        setConvertedAmount(amount * rate);
+      } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+      }
+    };
+
+    fetchExchangeRate();
+  }, [fromCurrency, toCurrency, amount]);
+
+  // Handler functions
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+  };
+
+  const handleFromCurrencyChange = (e) => {
+    setFromCurrency(e.target.value);
+  };
+
+  const handleToCurrencyChange = (e) => {
+    setToCurrency(e.target.value);
+  };
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -77,14 +113,62 @@ const ShoppingCartPage = () => {
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
 
-  // Calculate total eco-coins based on eco-friendly products
   const ecoCoins = cartItems.reduce((sum, item) => {
-    return sum + (item.ecoFriendly ? item.price * item.quantity * 0.05 : 0); // Earn coins for eco-friendly items
+    return sum + (item.ecoFriendly ? item.price * item.quantity * 0.05 : 0);
   }, 0);
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-base rounded-xl shadow-lg">
       <h1 className="text-3xl font-bold mb-8 text-base-content">Your Shopping Cart</h1>
+
+      {/* Currency Converter */}
+      <div className="flex items-center mb-4">
+  <Currency className="mr-2 text-base-content" size={20} />
+
+  {/* Amount Input */}
+  <input
+    type="number"
+    value={amount}
+    onChange={handleAmountChange}
+    className="bg-base-200 text-base-content px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+    min="0"
+  />
+
+  {/* From Currency Dropdown */}
+  <select
+    value={fromCurrency}
+    onChange={handleFromCurrencyChange}
+    className="bg-base-200 text-base-content px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ml-2"
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="JPY">JPY</option>
+    <option value="CAD">CAD</option>
+    <option value="INR">INR</option>
+    {/* Add more currencies as needed */}
+  </select>
+
+  {/* To Currency Dropdown */}
+  <select
+    value={toCurrency}
+    onChange={handleToCurrencyChange}
+    className="bg-base-200 text-base-content px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ml-2"
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="JPY">JPY</option>
+    <option value="CAD">CAD</option>
+    <option value="INR">INR</option>
+    {/* Add more currencies as needed */}
+  </select>
+
+  {/* Exchange Rate Display */}
+  <span className="ml-4 text-base-content">
+    {amount} {fromCurrency} = {convertedAmount.toFixed(2)} {toCurrency}
+  </span>
+</div>
 
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-base-content">Available Products</h2>

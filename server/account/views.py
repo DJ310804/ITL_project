@@ -17,6 +17,13 @@ from rest_framework.exceptions import ValidationError
 from .serializers import ConsumerSerializer,RewardsSerializer
 from .models import Product,Rewards
 
+from django.http import JsonResponse
+
+def get_products(request):
+    products = Product.objects.all().values('name', 'price')
+    return JsonResponse(list(products), safe=False)
+
+
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
@@ -115,9 +122,7 @@ class UserPasswordResetView(APIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
 
-        
 class ConsumerViewSet(viewsets.ModelViewSet):
     queryset = Consumer.objects.all()
     serializer_class = ConsumerSerializer

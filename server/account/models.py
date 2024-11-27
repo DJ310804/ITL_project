@@ -187,7 +187,6 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
 
     def save(self, *args, **kwargs):
-        # Calculate total price
         if not self.pk:  
             if self.consumer.user.role != 'consumer':
                 raise ValidationError("Only consumers can create orders.")

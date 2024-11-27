@@ -24,6 +24,7 @@ import CategoryPage from './components/Category';
 import AR from './components/AR';
 import Landingpage from './LandingPage';
 import HandicraftsPage from './components/HandicraftsPage';
+import ProductExport from './components/ProductExport';
 // import Rewards from './components/Rewards'
 
 
@@ -78,6 +79,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Landingpage />} />
           
+          <Route path="scraped_products" element={<ProductExport />} />
 
           {/* Seller Routes with Layout */}
           <Route path="/vendor" element={<Layout />}>

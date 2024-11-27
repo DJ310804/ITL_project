@@ -14,12 +14,12 @@ function Login() {
         setErrorMessage('');
         setSuccessMessage('');
     
-        const url = 'http://127.0.0.1:8000/api/user/login/';
+ 
         const userData = {
             email,
             password
         };
-    
+        const url = 'http://127.0.0.1:8000/api/user/login/';
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -39,14 +39,17 @@ function Login() {
             console.log('Login successful:', data);
             alert("Login successful!");
     
-            // Store the access token in a cookie
-            const accessToken = data.token.access;
-            Cookies.set('access_token', accessToken, {
-                expires: 1,  // Cookie will expire in 1 day
-                secure: true,  // Ensures cookie is sent over HTTPS
-                sameSite: 'strict',  // Prevents CSRF attacks
-            });
-    
+        // Store the access token in a cookie
+        const accessToken = data.token.access;
+        Cookies.set('access_token', accessToken, {
+            expires: 1,  // Cookie will expire in 1 day
+            secure: true,  // Ensures cookie is sent over HTTPS
+            sameSite: 'strict',  // Prevents CSRF attacks
+        });
+
+        // Store the refresh token in a cookie
+        const  refreshToken= data.token.refresh;
+        document.cookie = `refreshToken=${refreshToken}; HttpOnly; Secure; Path=/;`;
             const userInfo  = {
                 email: data.email,
                 role: data.role 
